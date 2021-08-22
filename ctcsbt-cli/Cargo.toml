@@ -1,0 +1,17 @@
+[package]
+name = "ctcsbt-cli"
+version = "0.1.0"
+edition = "2018"
+description = """
+A CLI tool for encoding/decoding the balise telegram of CTCS
+"""
+readme = "README.md"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "ctcsbt"
+path = "src/main.rs"
+
+[dependencies]
+ctcsbt = { path = ".." }
