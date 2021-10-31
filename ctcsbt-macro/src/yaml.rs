@@ -1,5 +1,5 @@
-use std::fs;
 use serde::{Deserialize, Serialize};
+use std::fs;
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub(crate) struct Packet {
@@ -40,12 +40,26 @@ pub(crate) struct Field {
     pub(crate) name: Option<String>,
 }
 
-pub(crate) fn into_multi(from: Vec<Field>) -> (Vec<String>, Vec<usize>) {
-    let mut ids = Vec::new();
-    let mut lens = Vec::new();
-    for field in from {
-        ids.push(field.var);
-        lens.push(field.len);
+#[derive(Default)]
+pub(crate) struct FieldVecs {
+    pub(crate) var_vec: Vec<String>,
+    pub(crate) len_vec: Vec<usize>,
+    pub(crate) arr_len_vec: Vec<Option<usize>>,
+    pub(crate) explanation_vec: Vec<Option<String>>,
+    pub(crate) name_vec: Vec<Option<String>>,
+}
+
+impl From<Vec<Field>> for FieldVecs {
+    fn from(fields: Vec<Field>) -> Self {
+        fields
+            .into_iter()
+            .fold(FieldVecs::default(), |mut prev, field| {
+                prev.var_vec.push(field.var);
+                prev.len_vec.push(field.len);
+                prev.arr_len_vec.push(field.arr_len);
+                prev.explanation_vec.push(field.explanation);
+                prev.name_vec.push(field.name);
+                prev
+            })
     }
-    (ids, lens)
 }

@@ -1,6 +1,5 @@
 #![no_std]
 
-mod list;
 mod telegram;
 
 #[cfg(test)]

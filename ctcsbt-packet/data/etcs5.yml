@@ -1,0 +1,23 @@
+---
+packet_name: ETCS_5
+packet_kind: ETCS
+packet_id: 5
+fields:
+  - var: nid_packet
+    len: 8
+  - var: q_dir
+    len: 2
+  - var: l_packet
+    len: 13
+  - var: q_scale
+    len: 2
+  - var: d_link
+    len: 15
+  - var: q_newcountry
+    len: 1
+  - var: nid_c
+    len: 8
+    dep: 
+      - var: q_newcountry
+        val: 1
+        cond: eq
