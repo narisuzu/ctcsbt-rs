@@ -1,0 +1,16 @@
+---
+packet_name: ETCS_16
+packet_kind: ETCS
+packet_id: 16
+fields:
+  - var: nid_packet
+    len: 8
+    explanation: 信息包標識碼={}
+  - var: q_dir
+    len: 2
+  - var: l_packet
+    len: 13
+  - var: q_scale
+    len: 2
+  - var: l_section
+    len: 15

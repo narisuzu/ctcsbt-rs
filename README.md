@@ -34,3 +34,10 @@ let l = [(21, 50), (7, 50), (141, 50), (21, 60)];
 ## Packet 44 的處理
 
 在 CTCS 中, Packet 44 中寄生着 CTCS 用戶信息包. 因此 Packet 44 不能用宏來實現. 需要手動實現以正確解析其中的 CTCS 包.
+
+## Crates
+
+src: encoder & decoder 的接口
+ctcsbt-cli: clap 封裝
+ctcsbt-macro: 過程宏，
+ctcsbt-packets: 用戶信息包定義

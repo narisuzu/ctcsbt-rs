@@ -1,16 +1,11 @@
 [package]
-name = "ctcsbt-macro"
+name = "ctcsbt-packet"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-[lib]
-proc-macro = true
 
 [dependencies]
-syn = "1.0.80"
-quote = "1.0.10"
-darling = "0.13.0"
-proc-macro2 = "1.0.30"
 serde = { version = "*", features = ["derive"] }
 serde_yaml = "*"
+ctcsbt-macro = { path = "../ctcsbt-macro"}
