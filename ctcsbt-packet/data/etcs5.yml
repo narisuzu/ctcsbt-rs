@@ -1,23 +1,37 @@
 ---
-packet_name: ETCS_5
-packet_kind: ETCS
-packet_id: 5
+name: ETCS_5
+kind: ETCS
+id: 5
 fields:
-  - var: nid_packet
-    len: 8
-  - var: q_dir
-    len: 2
-  - var: l_packet
-    len: 13
-  - var: q_scale
-    len: 2
-  - var: d_link
-    len: 15
-  - var: q_newcountry
-    len: 1
-  - var: nid_c
-    len: 8
-    dep: 
-      - var: q_newcountry
-        val: 1
-        cond: eq
+  - variable: nid_packet
+    length: 8
+  - variable: q_dir
+    length: 2
+  - variable: l_packet
+    length: 13
+  - variable: q_scale
+    length: 2
+  - variable: d_link
+    length: 15
+  - variable: q_newcountry
+    length: 1
+  - variable: nid_c
+    length: 8
+    condition:
+      variable: q_newcountry
+      value: 1
+      operator: Eq
+  - variable: nid_bg
+    length: 14
+  - variable: q_linkorientation
+    length: 1
+  - variable: q_linkreaction
+    length: 2
+  - variable: q_locacc
+    length: 6
+  - variable: n_iter
+    length: 5
+  - variable: d_link_k
+    rename_to: D_LINK(k)
+    length: 15
+    array_len: 31

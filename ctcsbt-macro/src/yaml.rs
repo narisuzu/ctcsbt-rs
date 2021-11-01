@@ -3,9 +3,9 @@ use std::fs;
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub(crate) struct Packet {
-    pub(crate) packet_name: String,
-    pub(crate) packet_kind: PacketKind,
-    pub(crate) packet_id: usize,
+    pub(crate) name: String,
+    pub(crate) kind: PacketKind,
+    pub(crate) id: usize,
     pub(crate) fields: Vec<Field>,
 }
 
@@ -31,13 +31,50 @@ impl Into<(String, String)> for PacketKind {
     }
 }
 
+/// the field type, which represent a field in the packet
+/// 
+/// variable: the unique name of the field
+/// length: how many bytes the field takes
+/// array_len: `None` if the field is not an array, otherwise the length of the array
+/// condition: `None` if the field is not conditional, otherwise the condition
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub(crate) struct Field {
-    pub(crate) var: String,
-    pub(crate) len: usize,
-    pub(crate) arr_len: Option<usize>,
+    pub(crate) variable: String,
+    pub(crate) length: usize,
+    pub(crate) array_len: Option<usize>,
     pub(crate) explanation: Option<String>,
-    pub(crate) name: Option<String>,
+    pub(crate) rename_to: Option<String>,
+    pub(crate) condition: Option<Condition>,
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+pub(crate) struct Condition {
+    pub(crate) variable: String,
+    pub(crate) value: usize,
+    pub(crate) operator: Operator,
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+pub(crate) enum Operator {
+    Eq,
+    Gt,
+    Geq,
+    Lt,
+    Leq,
+    Neq,
+}
+
+impl Operator {
+    fn calculate<T: PartialEq + PartialOrd>(&self, var: T, val: T) -> bool {
+        match self {
+            Operator::Eq => var == val,
+            Operator::Gt => var > val,
+            Operator::Lt => var < val,
+            Operator::Neq => var != val,
+            Operator::Geq => var >= val,
+            Operator::Leq => var <= val,
+        }
+    }
 }
 
 #[derive(Default)]
@@ -54,11 +91,11 @@ impl From<Vec<Field>> for FieldVecs {
         fields
             .into_iter()
             .fold(FieldVecs::default(), |mut prev, field| {
-                prev.var_vec.push(field.var);
-                prev.len_vec.push(field.len);
-                prev.arr_len_vec.push(field.arr_len);
+                prev.var_vec.push(field.variable);
+                prev.len_vec.push(field.length);
+                prev.arr_len_vec.push(field.array_len);
                 prev.explanation_vec.push(field.explanation);
-                prev.name_vec.push(field.name);
+                prev.name_vec.push(field.rename_to);
                 prev
             })
     }
