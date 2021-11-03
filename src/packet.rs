@@ -8,4 +8,3 @@ pub trait Packet {
     fn decode(data: &Telegram, start: u16, len: u16) -> Self;
     fn encode(&self, builder: &mut TelegramBuilder);
 }
- 

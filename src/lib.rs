@@ -1,9 +1,9 @@
 #![no_std]
 
-mod telegram;
-mod packet;
-mod macros;
 mod list;
+mod macros;
+mod packet;
+mod telegram;
 
 #[cfg(test)]
 mod tests {

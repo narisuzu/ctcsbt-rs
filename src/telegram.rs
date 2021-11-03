@@ -66,7 +66,7 @@ impl TelegramBuilder {
     fn new() -> Self {
         TelegramBuilder {
             data: Telegram::default(),
-            len: 0
+            len: 0,
         }
     }
 
