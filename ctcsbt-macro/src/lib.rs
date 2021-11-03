@@ -10,10 +10,7 @@ use crate::yaml::FieldVecs;
 pub fn packet_from_yaml(input: TokenStream) -> TokenStream {
     if let Lit::Str(s) = parse_macro_input!(input as Lit) {
         let Packet {
-            kind,
-            id,
-            fields,
-            ..
+            kind, id, fields, ..
         } = Packet::from_yaml(&s.value());
 
         let (kind_camel, kind_lower) = kind.into();
@@ -43,11 +40,11 @@ pub fn packet_from_yaml(input: TokenStream) -> TokenStream {
             }
 
             impl Packet for #struct_name {
-                fn decode(data: &[u32; 32], start: u16, len: u16) -> Self{
-
+                fn decode(data: &Telegram, start: u16, len: u16) -> Self {
+                    todo!()
                 }
 
-                fn encode(&self){
+                fn encode(&self, builder: &mut TelegramBuilder){
 
                 }
             }
@@ -65,7 +62,8 @@ fn eval_ty(len: usize, arr_len: Option<usize>) -> proc_macro2::TokenStream {
         }
     } else {
         match len {
-            0..=8 => quote! { u8 },
+            1 => quote! { bool },
+            2..=8 => quote! { u8 },
             9..=16 => quote! { u16 },
             17..=32 => quote! { u32 },
             33..=64 => quote! { u64 },

@@ -9,7 +9,6 @@ edition = "2021"
 members = [
     "ctcsbt-cli",
     "ctcsbt-macro",
-    "ctcsbt-packet",
 ]
 
 [dependencies]
