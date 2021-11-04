@@ -4,6 +4,7 @@ mod list;
 mod macros;
 mod packet;
 mod telegram;
+mod value_type;
 
 #[cfg(test)]
 mod tests {

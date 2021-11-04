@@ -1,8 +1,6 @@
-use core::{
-    fmt::Debug,
-    ops::{AddAssign, Shl},
-    panic,
-};
+use core::{fmt::Debug, panic};
+
+use crate::value_type::ValType;
 
 type RawSegment = u32;
 type BitIndex = u16; //2^16 = 65536
@@ -13,11 +11,12 @@ pub type Telegram = [RawSegment; SEGMENT_LEN as usize];
 trait ValueTrait<T, N> {
     fn get_range_val(&self, from: BitIndex, to: BitIndex) -> T;
     fn get_bit(&self, at: BitIndex) -> N;
+    fn set_val(&mut self, val: T);
 }
 
 impl<T> ValueTrait<T, bool> for Telegram
 where
-    T: TryFrom<BitIndex> + TryFrom<RawSegment> + AddAssign + Default + Copy + Shl<Output = T>,
+    T: ValType + TryFrom<BitIndex> + TryFrom<RawSegment>,
     <T as TryFrom<RawSegment>>::Error: Debug,
     <T as TryFrom<BitIndex>>::Error: Debug,
 {
@@ -41,12 +40,12 @@ where
             }
             //根據所劃定的寬度決定類型
             let expanded: T = segment.try_into().unwrap();
-            sum += expanded << offset.try_into().unwrap();
+            sum += expanded << offset;
             offset += if i == 0 {
                 relative_end + 1
             } else {
                 SEGMENT_LEN
-            };
+            } as u32;
         }
         sum
     }
@@ -54,6 +53,10 @@ where
     fn get_bit(&self, at: BitIndex) -> bool {
         let (segment_pos, relative_pos) = (at / SEGMENT_LEN, at % SEGMENT_LEN);
         self[segment_pos as usize] & (1 << SEGMENT_LEN - relative_pos - 1) != 0
+    }
+
+    fn set_val(&mut self, _: T) {
+        todo!()
     }
 }
 
@@ -74,7 +77,9 @@ impl TelegramBuilder {
         self.data
     }
 
-    fn write<T>(&mut self, data: T) -> Result<(), &'static str> {
+    fn write<T: ValType>(&mut self, data: T, len: u8) -> Result<(), &'static str> {
+        let data = data << (T::BITS - len as u32);
+        self.data;
         Ok(())
     }
 }
