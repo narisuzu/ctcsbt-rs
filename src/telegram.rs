@@ -6,12 +6,13 @@ type RawSegment = u32;
 type BitIndex = u16; //2^16 = 65536
 /// the amount of segments
 const SEGMENT_LEN: u16 = 1024 / RawSegment::BITS as u16;
+
 pub type Telegram = [RawSegment; SEGMENT_LEN as usize];
 
 trait ValueTrait<T, N> {
-    fn get_range_val(&self, from: BitIndex, to: BitIndex) -> T;
+    fn get_val(&self, from: BitIndex, to: BitIndex) -> T;
     fn get_bit(&self, at: BitIndex) -> N;
-    fn set_val(&mut self, val: T);
+    fn set_val(&mut self, at: BitIndex, val: T);
 }
 
 impl<T> ValueTrait<T, bool> for Telegram
@@ -20,8 +21,8 @@ where
     <T as TryFrom<RawSegment>>::Error: Debug,
     <T as TryFrom<BitIndex>>::Error: Debug,
 {
-    fn get_range_val(&self, from: BitIndex, to: BitIndex) -> T {
-        if from > to || to - from > 128 {
+    fn get_val(&self, from: BitIndex, to: BitIndex) -> T {
+        if from > to || (to - from) as u32 > T::BITS {
             panic!("range overflow")
         }
         let (first_segment_pos, last_segment_pos) = (from / SEGMENT_LEN, (to - 1) / SEGMENT_LEN);
@@ -50,13 +51,14 @@ where
         sum
     }
 
+    fn set_val(&mut self, at: BitIndex, val: T) {
+        let (segmant_pos, relative_pos) = (at / SEGMENT_LEN, at % SEGMENT_LEN);
+        todo!()
+    }
+
     fn get_bit(&self, at: BitIndex) -> bool {
         let (segment_pos, relative_pos) = (at / SEGMENT_LEN, at % SEGMENT_LEN);
         self[segment_pos as usize] & (1 << SEGMENT_LEN - relative_pos - 1) != 0
-    }
-
-    fn set_val(&mut self, _: T) {
-        todo!()
     }
 }
 
