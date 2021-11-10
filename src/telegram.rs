@@ -27,13 +27,13 @@ where
         }
         let (first_segment_pos, last_segment_pos) = (from / SEGMENT_LEN, (to - 1) / SEGMENT_LEN);
         let (relative_start, relative_end) = (from % SEGMENT_LEN, (to - 1) % SEGMENT_LEN);
-        let k = last_segment_pos - first_segment_pos + 1;
+        let k = last_segment_pos - first_segment_pos;
         let mut sum = T::default();
         let mut offset = 0;
 
-        for i in 0..k {
+        for i in 0..=k {
             let mut segment = self[(last_segment_pos - i) as usize];
-            if i == k - 1 {
+            if i == k {
                 segment = (segment << relative_start) >> relative_start;
             }
             if i == 0 {
@@ -41,7 +41,7 @@ where
             }
             //根據所劃定的寬度決定類型
             let expanded: T = segment.try_into().unwrap();
-            sum += expanded << offset;
+            sum |= expanded << offset;
             offset += if i == 0 {
                 relative_end + 1
             } else {
@@ -53,6 +53,7 @@ where
 
     fn set_val(&mut self, at: BitIndex, val: T) {
         let (segmant_pos, relative_pos) = (at / SEGMENT_LEN, at % SEGMENT_LEN);
+        T::BITS / SEGMENT_LEN as u32;
         todo!()
     }
 
@@ -63,25 +64,25 @@ where
 }
 
 pub struct TelegramBuilder {
-    data: Telegram,
+    buf: Telegram,
     len: u16,
 }
 
 impl TelegramBuilder {
     fn new() -> Self {
         TelegramBuilder {
-            data: Telegram::default(),
+            buf: Telegram::default(),
             len: 0,
         }
     }
 
     fn build(&self) -> Telegram {
-        self.data
+        self.buf
     }
 
     fn write<T: ValType>(&mut self, data: T, len: u8) -> Result<(), &'static str> {
         let data = data << (T::BITS - len as u32);
-        self.data;
+        self.buf;
         Ok(())
     }
 }

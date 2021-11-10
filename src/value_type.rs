@@ -1,7 +1,7 @@
-use core::ops::{AddAssign, Shl};
+use core::ops::{BitOrAssign, Shl};
 
 pub trait ValType:
-    AddAssign + Default + Copy + Shl<u32, Output = Self>
+    BitOrAssign + Default + Copy + Shl<u32, Output = Self>
 {
     const BITS: u32;
 }
