@@ -53,7 +53,7 @@ where
 
     fn set_val(&mut self, at: BitIndex, val: T) {
         let (segmant_pos, relative_pos) = (at / SEGMENT_LEN, at % SEGMENT_LEN);
-        T::BITS / SEGMENT_LEN as u32;
+        T::BITS / SEGMENT_LEN as u32 + 1;
         todo!()
     }
 
