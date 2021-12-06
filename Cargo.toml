@@ -15,3 +15,6 @@ members = [
 ctcsbt-macro = { path = "./ctcsbt-macro"}
 quote = "*"
 rand = "*"
+
+[lib]
+test = true
