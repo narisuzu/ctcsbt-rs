@@ -1,8 +1,8 @@
 use proc_macro::TokenStream;
 use proc_macro2::Ident;
-use quote::quote;
+use quote::{format_ident, quote};
 use syn::{parse_macro_input, spanned::Spanned, Lit};
-use yaml::Packet;
+use yaml::{Field, Packet};
 
 use crate::yaml::FieldVecs;
 
@@ -14,29 +14,22 @@ pub fn packet_from_yaml(input: TokenStream) -> TokenStream {
         } = Packet::from_yaml(&s.value());
 
         let (kind_camel, kind_lower) = kind.into();
-
-        let struct_name = kind_camel + id.to_string().as_str();
-        let struct_name = Ident::new(struct_name.as_str(), struct_name.span());
+        let struct_name = format_ident!("{}", kind_camel + &id.to_string());
         let FieldVecs {
             var_vec,
             len_vec,
             arr_len_vec,
             explanation_vec,
             name_vec,
-        } = fields.into();
+        } = fields.clone().into();
 
-        let field_vars = var_vec.iter().map(|v| Ident::new(v.as_str(), v.span()));
-
-        let cloned_arr_len_vec = arr_len_vec.clone();
-        let filed_sizes = len_vec.iter().enumerate().map(move |(i, &len)| {
-            let &arr_len = cloned_arr_len_vec.get(i).unwrap();
-            eval_ty(len, arr_len)
-        });
-        let kind_ident = Ident::new(kind_lower.as_str(), kind_lower.span());
+        let field_vars = var_vec.iter().map(|v| format_ident!("{}", v));
+        let field_types = fields.iter().map(|f| eval_ty(f.clone()));
+        let kind_ident = format_ident!("{}", kind_lower);
 
         let token = quote! {
             struct #struct_name {
-                #(#field_vars: #filed_sizes),*
+                #(#field_vars: #field_types),*
             }
 
             impl Packet for #struct_name {
@@ -55,21 +48,34 @@ pub fn packet_from_yaml(input: TokenStream) -> TokenStream {
     panic!("expect a string")
 }
 
-fn eval_ty(len: usize, arr_len: Option<usize>) -> proc_macro2::TokenStream {
-    if let Some(arr_len) = arr_len {
-        quote! {
-            List<usize, #arr_len>
-        }
-    } else {
-        match len {
-            1 => quote! { bool },
-            2..=8 => quote! { u8 },
-            9..=16 => quote! { u16 },
-            17..=32 => quote! { u32 },
-            33..=64 => quote! { u64 },
-            65..=128 => quote! { u128 },
-            _ => panic!("len overflow"),
-        }
+fn eval_ty(field: Field) -> proc_macro2::TokenStream {
+    if let Some(condition) = &field.condition {
+        let field = Field {
+            condition: None,
+            ..field
+        };
+        let ele_ty = eval_ty(field);
+        return quote! {
+            Option<#ele_ty>
+        };
+    }
+    if let Some(arr_len) = field.array_len {
+        let field = Field {
+            array_len: None,
+            ..field
+        };
+        let ele_ty = eval_ty(field);
+        return quote! {
+            List<#ele_ty, #arr_len>
+        };
+    }
+    match field.length {
+        1..=8 => quote! { u8 },
+        9..=16 => quote! { u16 },
+        17..=32 => quote! { u32 },
+        33..=64 => quote! { u64 },
+        65..=128 => quote! { u128 },
+        _ => panic!("len overflow"),
     }
 }
 

@@ -1,6 +1,6 @@
 pub struct List<N, const M: usize> {
-    data: [N; M],
-    len: usize,
+    pub(crate) data: [N; M],
+    pub(crate) len: usize,
 }
 
 impl<N: Copy, const M: usize> List<N, M> {

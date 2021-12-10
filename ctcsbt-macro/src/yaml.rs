@@ -1,7 +1,7 @@
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use std::fs;
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Deserialize, Debug)]
 pub(crate) struct Packet {
     pub(crate) name: String,
     pub(crate) kind: PacketKind,
@@ -10,13 +10,13 @@ pub(crate) struct Packet {
 }
 
 impl Packet {
-    pub fn from_yaml(path: &str) -> Self {
+    pub(crate) fn from_yaml(path: &str) -> Self {
         let contents = fs::read_to_string(path).expect("Something went wrong reading the file");
         serde_yaml::from_str(contents.as_str()).expect("Something went wrong parsing the yaml")
     }
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Deserialize)]
 pub(crate) enum PacketKind {
     ETCS,
     CTCS,
@@ -32,12 +32,12 @@ impl Into<(String, String)> for PacketKind {
 }
 
 /// the field type, which represent a field in the packet
-/// 
+///
 /// variable: the unique name of the field
 /// length: how many bytes the field takes
 /// array_len: `None` if the field is not an array, otherwise the length of the array
 /// condition: `None` if the field is not conditional, otherwise the condition
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub(crate) struct Field {
     pub(crate) variable: String,
     pub(crate) length: usize,
@@ -47,14 +47,14 @@ pub(crate) struct Field {
     pub(crate) condition: Option<Condition>,
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub(crate) struct Condition {
     pub(crate) variable: String,
     pub(crate) value: usize,
     pub(crate) operator: Operator,
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub(crate) enum Operator {
     Eq,
     Gt,

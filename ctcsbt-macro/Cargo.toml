@@ -8,9 +8,9 @@ edition = "2021"
 proc-macro = true
 
 [dependencies]
-syn = "1.0.80"
-quote = "1.0.10"
-darling = "0.13.0"
-proc-macro2 = "1.0.30"
+syn = "*"
+quote = "*"
+darling = "*"
+proc-macro2 = "*"
 serde = { version = "*", features = ["derive"] }
 serde_yaml = "*"

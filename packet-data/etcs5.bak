@@ -17,6 +17,7 @@ fields:
     length: 1
   - variable: nid_c
     length: 8
+    condition: eq($q_newcountry, 1)
   - variable: nid_bg
     length: 14
   - variable: q_linkorientation
@@ -31,3 +32,4 @@ fields:
     rename_to: D_LINK(k)
     length: 15
     array_len: 31
+
