@@ -4,8 +4,6 @@ use quote::{format_ident, quote};
 use syn::{parse_macro_input, spanned::Spanned, Lit};
 use yaml::{Field, Packet};
 
-use crate::yaml::FieldVecs;
-
 #[proc_macro]
 pub fn packet_from_yaml(input: TokenStream) -> TokenStream {
     if let Lit::Str(s) = parse_macro_input!(input as Lit) {
@@ -15,15 +13,8 @@ pub fn packet_from_yaml(input: TokenStream) -> TokenStream {
 
         let (kind_camel, kind_lower) = kind.into();
         let struct_name = format_ident!("{}", kind_camel + &id.to_string());
-        let FieldVecs {
-            var_vec,
-            len_vec,
-            arr_len_vec,
-            explanation_vec,
-            name_vec,
-        } = fields.clone().into();
 
-        let field_vars = var_vec.iter().map(|v| format_ident!("{}", v));
+        let field_vars = fields.iter().map(|f| format_ident!("{}", f.variable));
         let field_types = fields.iter().map(|f| eval_ty(f.clone()));
         let kind_ident = format_ident!("{}", kind_lower);
 
@@ -34,11 +25,13 @@ pub fn packet_from_yaml(input: TokenStream) -> TokenStream {
 
             impl Packet for #struct_name {
                 fn decode(data: &Telegram, start: u16, len: u16) -> Self {
+                    // let var_a = ...
+                    // let var_b = ...
+                    // let var_c = ...
                     todo!()
                 }
 
                 fn encode(&self, builder: &mut TelegramBuilder){
-
                 }
             }
         };
